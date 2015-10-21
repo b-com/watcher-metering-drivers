@@ -6,26 +6,20 @@ Introduction
 ============
 
 Watcher Metering Drivers provides a set of metric-pulling drivers extending the
-python-watcher_metering_ package.
-
-Watcher Metering collects system metrics and publishes them to a store.
-To do so, it is composed of two elements:
+`Watcher Metering`_ project which is used to collect system metrics before publishing them to a given store.
+To sum up, Watcher Metering service is composed by 2 modules:
 
 - The ``Agent`` who collects the desired metrics and sends it to a publisher.
-  The ``Agent`` is meant to run on each monitored host (container, VM, ...)
 - The ``Publisher`` who gathers measurements from one or more agent and pushes
-  them to the desired store. The currently supported stores are Riemann
-  (for CEP) and Ceilometer.
+  them to the desired store. 
 
-This package is part of the Watcher_ project.
+Drivers easily extend metrics collecting features of Agent (we use `stevedore`_ library for managing plugins).
 
-For more information on Watcher_, you can also refer to its OpenStack wiki_
-page.
+This project is part of the Watcher_ project.
 
-.. _python-watcher_metering: https://pypi.python.org/pypi/python-watcher_metering
-.. _Watcher: http://factory.b-com.com/www/watcher/watcher/doc/build/html/
-.. _wiki: https://wiki.openstack.org/wiki/Watcher
-
+.. _Watcher Metering: https://github.com/b-com/watcher-metering
+.. _Watcher: https://wiki.openstack.org/wiki/Watcher
+.. _stevedore: http://git.openstack.org/cgit/openstack/stevedore
 
 Getting started
 ===============
@@ -33,8 +27,7 @@ Getting started
 System requirements
 -------------------
 
-As this package extends python-watcher_metering_, please make sure you
-installed its system dependencies before continuing.
+Watcher Metering packages must be installed before installing the drivers. Please follow the installation procedure of the `Watcher Metering`_ project first.
 
 Installation
 ------------
@@ -43,14 +36,13 @@ To install this package, just use *pip*:
 
 .. code-block:: shell
 
-    $ pip install python-watcher_metering_drivers
+    # pip install python-watcher_metering_drivers
 
 
 Activate a driver
 -----------------
 
-Within the your watcher metering configuration file, add the name of the driver
-entry point you wish to enable.
+Within the your Watcher Metering Agent configuration file ``/etc/watcher-metering/watcher-metering-agent.conf``, add the name of the driver entry point, in the ``[agent]`` section,  you wish to enable.
 
 As an example, if you wish to acticate both the ``cpu_user`` and the
 ``disk_free`` drivers, just edit the aforementioned configuration file like
@@ -59,29 +51,35 @@ this:
 .. code-block:: ini
 
      [agent]
-     driver_names =  cpu_user,disk_free
-     # ...
+     driver_names =  
+        cpu_user,
+        disk_free
+     
+After updating the configuration file, you have to `restart the Watcher Metering Agent`_.
 
-
-Running the application
------------------------
-
-To run our Watcher Metering agent, you can use the following command
-
+.. _restart the Watcher Metering Agent: https://github.com/b-com/watcher-metering/blob/master/doc/source/deploy/installation.rst#command
 
 Driver configuration
 ====================
 
-To configure a driver, you can specify it in a separate configuration file.
-Please refer to the comments left within the ``$(ROOT_DIR)/etc/watcher-metering``\
-``/watcher-metering-drivers.conf`` sample to get more details on the
-configuration options.
+List of drivers implemented in this project are the following:
+    - **cpu_count**: number of CPU cores available on host machine
+    - **cpu_user**:percentage of CPU resources allocated to user processes on host machine
+    - **cpu_idle**: percentage of CPU resources not used on host machine
+    - **disk_total**: total disk size of host machine 
+    - **disk_used**:  used disk size on host machine
+    - **disk_free**:  free disk size of host machine
+    - **memory_total**: total memory size on host machine 
+    - **memory_used**: used memory size on host machine
+    - **memory_free**: free memory size on host machine
+    - **instance_cpu_used**: percentage of CPU resources used on an instance running on the host machine
+    - **swap_total**: total memory swap size on host machine
+    - **swap_used**: used memory swap size on host machine
+    - **swap_free**: free memory swap size on host machine
 
-Then, to run the agent using our driver configuration, you can use the
-following command:
+Each driver can be also configurable by adding a dedicated section named ``[[metrics_driver.driver_name]`` in a configuration file loaded by the Watcher Metering Agent. Such a file is self documented, so you will find in it all driver configuration documentation. 
 
-.. code-block:: shell
+You will find a sample by editing the file `etc/watcher-metering-drivers/watcher-metering-drivers.conf.sample`_
 
-    $ watcher-metering-agent \
-        --config-file=$(WATCHER_METERING_AGENT_CONFIG_FILE)
-        --config-file=$(WATCHER_METERING_DRIVERS_CONFIG_FILE)
+.. _etc/watcher-metering-drivers/watcher-metering-drivers.conf.sample: etc/watcher-metering-drivers/watcher-metering-drivers.conf.sample.
+
