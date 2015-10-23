@@ -17,12 +17,9 @@
 from __future__ import unicode_literals
 
 
+from oslotest.base import BaseTestCase as OsloBaseTestCase
 from testscenarios import WithScenarios
-from testtools import TestCase
 
 
-class BaseTestCase(WithScenarios, TestCase):
+class BaseTestCase(WithScenarios, OsloBaseTestCase):
     """Test base class."""
-
-    def setUp(self):
-        super(BaseTestCase, self).setUp()

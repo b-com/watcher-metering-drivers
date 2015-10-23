@@ -40,7 +40,6 @@ class InstanceCpuNodePuller(MetricPuller):
         self.connection_uri = connection_uri
 
         self.uri = self._get_uri()
-
         self.wrapper = InstanceCpuWrapper(
             libvirt_type=self.libvirt_type,
             libvirt_uri=self.uri,
@@ -71,7 +70,7 @@ class InstanceCpuNodePuller(MetricPuller):
                        default='kvm',
                        choices=['kvm', 'lxc', 'qemu', 'uml', 'xen'],
                        help='Libvirt domain type.'),
-            cfg.StrOpt('libvirt_uri',
+            cfg.StrOpt('connection_uri',
                        default='',
                        help='Override the default libvirt URI '
                             '(which is dependent on libvirt_type).'),
